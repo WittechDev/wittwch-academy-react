@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import Header from "./components/Header";
 import Tasks from "./components/Tasks";
 import AddTask from "./components/AddTask";
+import About from "./components/About";
+
+import { createStore } from "redux";
 
 function App() {
   const [showAddTask, setShowAddTask] = useState(false);
@@ -50,27 +54,71 @@ function App() {
   };
 
   useEffect(() => {
-    console.log(tasks);
+    // console.log(tasks);
   }, [tasks]);
 
   return (
-    <div className="container">
-      <Header
-        showAddTask={showAddTask}
-        toggleAddTask={() => setShowAddTask(!showAddTask)}
-      />
-      {showAddTask && <AddTask addTask={addTask} />}
-      {tasks.length > 0 ? (
-        <Tasks
-          tasks={tasks}
-          removeTask={removeTask}
-          toggleReminder={toggleReminder}
+    <Router>
+      <div className="container">
+        <Header
+          showAddTask={showAddTask}
+          toggleAddTask={() => setShowAddTask(!showAddTask)}
         />
-      ) : (
-        "no tasks"
-      )}
-    </div>
+        <Switch>
+          <Route path="/about">
+            <About />
+          </Route>
+          <Route
+            path="/"
+            render={(props) => (
+              <>
+                {showAddTask && <AddTask addTask={addTask} />}
+                {tasks.length > 0 ? (
+                  <Tasks
+                    tasks={tasks}
+                    removeTask={removeTask}
+                    toggleReminder={toggleReminder}
+                  />
+                ) : (
+                  "no tasks"
+                )}
+              </>
+            )}
+          />
+        </Switch>
+      </div>
+      <footer>
+        <p>Powered by CrazydogM</p>
+        <Link to="/about">about me</Link>
+      </footer>
+
+      <div>
+        <button>-</button>
+      </div>
+    </Router>
   );
 }
 
 export default App;
+
+function counterReducer(state = { value: 0 }, action) {
+  switch (action.type) {
+    case "counter/incremented":
+      return { value: state.value + 1 };
+    case "counter/decremented":
+      return { value: state.value - 1 };
+    default:
+      return state;
+  }
+}
+
+let store = createStore(counterReducer);
+
+store.subscribe(() => console.log(store.getState()));
+
+store.dispatch({ type: "counter/incremented" });
+// {value: 1}
+store.dispatch({ type: "counter/incremented" });
+// {value: 2}
+store.dispatch({ type: "counter/decremented" });
+// {value: 1}
