@@ -1,13 +1,19 @@
 import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import Header from "./components/Header";
 import Tasks from "./components/Tasks";
 import AddTask from "./components/AddTask";
 import About from "./components/About";
+import Button from "./components/Button";
+import { decremented, incremented } from "./store/counterSlice";
 
-import { createStore } from "redux";
+// import { createStore } from "redux";
 
 function App() {
+  const count = useSelector((state) => state.counter.value);
+  const dispatch = useDispatch();
+
   const [showAddTask, setShowAddTask] = useState(false);
   const [tasks, setTasks] = useState([
     {
@@ -53,10 +59,6 @@ function App() {
     );
   };
 
-  useEffect(() => {
-    // console.log(tasks);
-  }, [tasks]);
-
   return (
     <Router>
       <div className="container">
@@ -92,8 +94,18 @@ function App() {
         <Link to="/about">about me</Link>
       </footer>
 
-      <div>
-        <button>-</button>
+      <div style={{ display: "flex" }}>
+        <Button
+          bgColor={"green"}
+          text={"-"}
+          onClick={() => dispatch(decremented())}
+        />
+        <div>{count}</div>
+        <Button
+          bgColor={"green"}
+          text={"+"}
+          onClick={() => dispatch(incremented())}
+        />
       </div>
     </Router>
   );
@@ -101,24 +113,24 @@ function App() {
 
 export default App;
 
-function counterReducer(state = { value: 0 }, action) {
-  switch (action.type) {
-    case "counter/incremented":
-      return { value: state.value + 1 };
-    case "counter/decremented":
-      return { value: state.value - 1 };
-    default:
-      return state;
-  }
-}
+// function counterReducer(state = { value: 0 }, action) {
+//   switch (action.type) {
+//     case "counter/incremented":
+//       return { value: state.value + 1 };
+//     case "counter/decremented":
+//       return { value: state.value - 1 };
+//     default:
+//       return state;
+//   }
+// }
 
-let store = createStore(counterReducer);
+// let store = createStore(counterReducer);
 
-store.subscribe(() => console.log(store.getState()));
+// store.subscribe(() => console.log(store.getState()));
 
-store.dispatch({ type: "counter/incremented" });
-// {value: 1}
-store.dispatch({ type: "counter/incremented" });
-// {value: 2}
-store.dispatch({ type: "counter/decremented" });
-// {value: 1}
+// store.dispatch({ type: "counter/incremented" });
+// // {value: 1}
+// store.dispatch({ type: "counter/incremented" });
+// // {value: 2}
+// store.dispatch({ type: "counter/decremented" });
+// // {value: 1}
